@@ -9,7 +9,7 @@
 .idea/shelf
 
 # deps
-node_modules/
+**/node_modules/
 
 # env
 .env
@@ -26,3 +26,5 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+
+data

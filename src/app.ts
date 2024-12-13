@@ -1,70 +1,59 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-import { html } from 'hono/html';
 import { serveStatic } from '@hono/node-server/serve-static'
 
-import { liveTemplates, type LiveProps } from "./template/live.js";
-
-
-const WebSocket = require('ws')
-
-const APPNAME = "p";
-
-import {
-  getCookie,
-  getSignedCookie,
-  setCookie,
-  setSignedCookie,
-  deleteCookie,
-} from 'hono/cookie'
 import { setupYConnection } from './y/index.js';
-import { title } from 'process';
-import path from 'path';
+import { indexTemplates } from './template/index.js';
+import { liveTemplates } from "./template/live.js";
 
+const APPNAME = "APP";
 const app = new Hono();
+
+const rooms = new Set<string>();
 
 // health check
 app.get('/health', c => c.text('Healthy'));
 app.get('/healthz', c => c.text('Healthy'));
 
 app.get("/live/:key", async (c) => {
-  const username = c.req.param("key");
-  // return c.html(
-  //   html`<!doctype html>
-  //     <h1>Hello! ${username}!</h1>`
-  // );
-  const content = await liveTemplates.live({} as LiveProps);
+  const roomKey = c.req.param("key");
+
+  const content = await liveTemplates.live({
+    title: `App - ${roomKey}`,
+  });
 
   return c.html(content || "");
 });
 
-app.post("/live/:key", (c) => {
-  return c.text("TODO");
-});
-
-app.get("/:key", (c) => {
-  return c.text(`Hello! ${c.req.param("key")}!`);
-});
-
 // index
 app.get('/', (c) => {
-  return c.text('Hello Hono!')
+  return c.html(indexTemplates.index({}) || "");
+});
+
+app.get('/create', (c) => {
+  let room = Math.random().toString(36).substring(7);
+
+  while (rooms.has(room)) {
+    room = Math.random().toString(36).substring(7);
+  }
+
+  rooms.add(room);
+
+  return c.redirect(`/live/${room}`);
 });
 
 app.use('/static/*', serveStatic({
   root: ".",
-  onNotFound: (path, c) => {
-    console.log(`${path} is not found, you access ${c.req.path}`)
-  }
 }));
 
 const port = parseInt(process.env[`${APPNAME}_PORT`] || "1234", 10);
 
-console.log(`Server is running on http://localhost:${port}`);
+console.log(`Server is running on http://0.0.0.0:${port}`);
 
 const server = serve({
   fetch: app.fetch,
   port,
+  hostname: "0.0.0.0",
 });
 
 console.log("Serving...");
