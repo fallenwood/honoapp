@@ -1,8 +1,8 @@
 FROM docker.io/debian:12 AS prep
 RUN apt update -y && apt install curl unzip -y
 WORKDIR /downloads
-RUN curl -sSL "https://github.com/oven-sh/bun/releases/download/bun-v1.1.38/bun-linux-aarch64.zip" -o bun-aarch64.zip
-RUN curl -sSL "https://github.com/oven-sh/bun/releases/download/bun-v1.1.38/bun-linux-x64.zip" -o bun-x64.zip
+RUN curl -sSL "https://github.com/oven-sh/bun/releases/download/bun-v1.1.38/bun-linux-aarch64.zip" -o bun-linux-aarch64.zip
+RUN curl -sSL "https://github.com/oven-sh/bun/releases/download/bun-v1.1.38/bun-linux-x64.zip" -o bun-linux-x64.zip
 RUN unzip "bun-linux-aarch64.zip"
 RUN unzip "bun-linux-x64.zip"
 RUN mv bun-linux-x64/bun /usr/bin/bun
