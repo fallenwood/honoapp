@@ -9,6 +9,7 @@ RUN mv bun-linux-x64/bun /usr/bin/bun
 WORKDIR /src
 
 FROM prep AS build
+COPY . .
 WORKDIR /src/clients/live
 RUN bun install && bun run build
 WORKDIR /src/src
