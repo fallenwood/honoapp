@@ -19,6 +19,7 @@ FROM --platform=arm64 gcr.io/distroless/base-nossl-debian12 AS base
 WORKDIR /app
 
 FROM base AS final
+EXPOSE 3000
 COPY --from=build /src /app
 COPY --from=build /downloads/bun-linux-aarch64/bun /usr/bin/bun
 ENV APP_PORT=3000
